@@ -7,6 +7,8 @@ const c = config.dev;   // gabe has this as config.aws
 //Configure AWS
 var credentials = new AWS.SharedIniFileCredentials({profile: 'default'});   // Gabe has the profile: c.aws_profile
 AWS.config.credentials = credentials;
+console.log(`aws credentials, accesskeyID = ${AWS.config.credentials.accessKeyId}`);
+console.log(`aws credentials, secretAccessKey = ${AWS.config.credentials.secretAccessKey}`);
 
 export const s3 = new AWS.S3({
   signatureVersion: 'v4',
