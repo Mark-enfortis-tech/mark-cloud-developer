@@ -1,6 +1,8 @@
 import fs from 'fs';
 import Jimp = require('jimp');
 import { reject } from 'bluebird';
+import { send } from 'process';
+import { response } from 'express';
 
 // filterImageFromURL
 // helper function to download, filter, and save the filtered image locally
@@ -9,19 +11,44 @@ import { reject } from 'bluebird';
 //    inputURL: string - a publicly accessible url to an image file
 // RETURNS
 //    an absolute path to a filtered image locally saved file
-export async function filterImageFromURL(inputURL: string): Promise<string>{
+export async function filterImageFromURL1(inputURL: string): Promise<string>{
     return new Promise( async (resolve, reject)  => { 
-        const photo = await Jimp.read(inputURL);
-        const outpath = '/tmp/filtered.'+Math.floor(Math.random() * 2000)+'.jpg';
-        await photo
-        .resize(256, 256) // resize
-        .quality(60) // set JPEG quality
-        .greyscale() // set greyscale
-        .write(__dirname+outpath, (img)=>{
-            resolve(__dirname+outpath);
-        });
+            const photo = await Jimp.read(inputURL);
+            const outpath = '/tmp/filtered.'+Math.floor(Math.random() * 2000)+'.jpg';
+            await photo
+            .resize(256, 256) // resize
+            .quality(60) // set JPEG quality
+            .greyscale() // set greyscale
+            .write(__dirname+outpath, (img)=>{
+                resolve(__dirname+outpath);
+            });
     });
 }
+
+
+
+
+export async function filterImageFromURL(inputURL: string): Promise<string>{
+    return new Promise( async (resolve, reject)  => { 
+        try{
+            const photo = await Jimp.read(inputURL);
+            const outpath = '/tmp/filtered.'+Math.floor(Math.random() * 2000)+'.jpg';
+            await photo
+            .resize(256, 256) // resize
+            .quality(60) // set JPEG quality
+            .greyscale() // set greyscale
+            .write(__dirname+outpath, (img)=>{
+                resolve(__dirname+outpath);
+            });
+    } catch(error) {
+        console.log('error at filterImageFromURL');
+        reject();
+    }
+    });
+}
+
+
+
 
 // deleteLocalFiles
 // helper function to delete files on the local disk
@@ -34,7 +61,6 @@ export async function deleteLocalFiles(files:Array<string>){
         fs.unlinkSync(file);
     }
 }
-
 
 export async function deleteLocalFile(file: string){0
         console.log('deleteLocalFile() accessing file ', file);

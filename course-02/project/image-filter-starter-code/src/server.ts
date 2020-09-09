@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { response } from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles, deleteLocalFile} from './util/util';
 import fs from 'fs';
@@ -44,27 +44,19 @@ import fs from 'fs';
     res.send("try GET /filteredimage?image_url={{}}")
   } );
 
+
   app.get("/filteredimage", async(req, res) => {
     console.log('hello from c2-image-filter/filteredimage endpoint');
     console.log(`req params: ${req.query.image_url}`);
 
     let inputFile = req.query.image_url;
 
-    // validate the url
-    // return 422 on errors
-
-    // call filter function
     console.log('calling filterImageFromURL()');
+     
+    var filteredImageFile = "";
+
     try{
       filteredImageFile = await filterImageFromURL(inputFile);
-    } catch (err) {
-      alert(err);
-      console.log('incorrect file type received ');
-      res.status(422);
-      res.send('incorrect file sent')
-    }
-
-      
       imageFileArray.push(filteredImageFile);   // save filename into array for later deletion
       console.log('returned from filterImageFromURL() function');
 
@@ -73,21 +65,21 @@ import fs from 'fs';
       //res.send(`returning file ${filteredImageFile}`);
       //res.send('hello from c2-image-filter/filteredimage endpoint');
       res.sendFile(filteredImageFile);
-
    
       res.on('finish', () => {
         console.log('delete file from server.ts ', filteredImageFile);
         //deleteLocalFiles(imageFileArray);
         deleteLocalFile(filteredImageFile);
         console.log('file deletion complete');
-
       })
-   
-      
+    } catch(error) {
+      console.log('caught error from filterImageFromURL()', error);
+      res.status(404).send('incorrect file format');
+    }
     
+ 
     
-    //
-    
+
 
 
   })
