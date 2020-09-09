@@ -1,5 +1,6 @@
 import fs from 'fs';
 import Jimp = require('jimp');
+import { reject } from 'bluebird';
 
 // filterImageFromURL
 // helper function to download, filter, and save the filtered image locally
@@ -9,7 +10,7 @@ import Jimp = require('jimp');
 // RETURNS
 //    an absolute path to a filtered image locally saved file
 export async function filterImageFromURL(inputURL: string): Promise<string>{
-    return new Promise( async resolve => {
+    return new Promise( async (resolve, reject)  => { 
         const photo = await Jimp.read(inputURL);
         const outpath = '/tmp/filtered.'+Math.floor(Math.random() * 2000)+'.jpg';
         await photo
@@ -28,7 +29,16 @@ export async function filterImageFromURL(inputURL: string): Promise<string>{
 // INPUTS
 //    files: Array<string> an array of absolute paths to files
 export async function deleteLocalFiles(files:Array<string>){
-    for( let file of files) {
+    for( let file of files ) {
+        console.log('deleteLocalFiles() accessing file ', file);
         fs.unlinkSync(file);
     }
+}
+
+
+export async function deleteLocalFile(file: string){0
+        console.log('deleteLocalFile() accessing file ', file);
+        fs.unlinkSync(file);
+
+  
 }
