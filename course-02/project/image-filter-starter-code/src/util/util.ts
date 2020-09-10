@@ -3,6 +3,7 @@ import Jimp = require('jimp');
 import { reject } from 'bluebird';
 import { send } from 'process';
 import { response } from 'express';
+import { pathToFileURL } from 'url';
 
 // filterImageFromURL
 // helper function to download, filter, and save the filtered image locally
@@ -62,9 +63,10 @@ export async function deleteLocalFiles(files:Array<string>){
     }
 }
 
-export async function deleteLocalFile(file: string){0
-        console.log('deleteLocalFile() accessing file ', file);
-        fs.unlinkSync(file);
 
-  
+export async function deleteLocalFilesWithDir(dir: string, files:Array<string>){
+    for( let file of files ) {
+        console.log('deleteLocalFiles() file: ', dir+file);
+        fs.unlinkSync(dir+file);
+    }
 }

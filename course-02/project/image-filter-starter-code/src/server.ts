@@ -1,6 +1,6 @@
 import express, { response } from 'express';
 import bodyParser from 'body-parser';
-import {filterImageFromURL, deleteLocalFiles, deleteLocalFile} from './util/util';
+import {filterImageFromURL, deleteLocalFiles, deleteLocalFilesWithDir} from './util/util';
 import fs from 'fs';
 
 
@@ -18,6 +18,7 @@ import fs from 'fs';
   // file array for holding local files
   var imageFileArray = [""];
   var filteredImageFile = ""
+  var tempFilePath = ""
 
   // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
   // GET /filteredimage?image_url={{URL}}
@@ -69,19 +70,17 @@ import fs from 'fs';
       res.on('finish', () => {
         console.log('delete file from server.ts ', filteredImageFile);
         //deleteLocalFiles(imageFileArray);
-        deleteLocalFile(filteredImageFile);
+        var files = fs.readdirSync('src/util/tmp/');
+        console.log('contents of src/util/tmp ', files);
+        tempFilePath = `${__dirname}`+'/util/tmp/';
+        deleteLocalFilesWithDir(tempFilePath,files);
+
         console.log('file deletion complete');
       })
     } catch(error) {
       console.log('caught error from filterImageFromURL()', error);
       res.status(404).send('incorrect file format');
     }
-    
- 
-    
-
-
-
   })
   
 
