@@ -4,9 +4,13 @@ import { requireAuth } from '../../users/routes/auth.router';
 import * as AWS from '../../../../aws';
 
 const router: Router = Router();
+const imageFilterAddress = 'http://localhost:8082'
+const tempImageAddr = 'http://localhost:8082/filteredimage?image_url=https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_tabby_and_white_kitten_n01.jpg'
+
 
 // Get all feed items
 router.get('/', async (req: Request, res: Response) => {
+    console.log('route /api/v0/feed')
     const items = await FeedItem.findAndCountAll({order: [['id', 'DESC']]});
     items.rows.map((item) => {
             if(item.url) {
@@ -14,6 +18,17 @@ router.get('/', async (req: Request, res: Response) => {
             }
     });
     res.send(items);
+});
+
+// add redirection for image handling
+router.get('/filteredimage', async( req: Request, res: Response) => {
+    const imageAddrWithQparams = imageFilterAddress + req.url;
+    //console.log('req.url is :',req.url);
+    console.log('hardcoded url:', imageAddrWithQparams);
+    //console.log('hardcoded url:', tempImageAddr);
+    res.redirect(imageAddrWithQparams); 
+    //res.redirect(tempImageAddr);
+    //res.status(202);  
 });
 
 ///////////    @TODO    ////////////
@@ -81,5 +96,24 @@ router.post('/',
     saved_item.url = AWS.getGetSignedUrl(saved_item.url);
     res.status(201).send(saved_item);
 });
+
+
+
+function sendRedirect(address: string, req: Request, res: Response){
+    return new Promise(function(resolve, reject){
+        res.redirect(address);
+
+
+    })
+}
+
+
+
+
+
+
+
+
+
 
 export const FeedRouter: Router = router;
